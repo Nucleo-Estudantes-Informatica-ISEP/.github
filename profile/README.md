@@ -20,6 +20,7 @@ The department, similarly to the others, is composed by a head/coordinator and t
 | ---------------------------------- | ----------------------------------- |
 | **Márcio Brandão**                 | Head Coordinator                    |
 | **Nuno Domingues**                 | Co-Coordinator                      |
+| **Jaime Brito**                    | Member                              |
 | **Miguel Ferreira**                | Member                              |
 | **Ricardo Freitas**                | Member                              |
 | **Ricardo Venâncio**               | Member                              |
