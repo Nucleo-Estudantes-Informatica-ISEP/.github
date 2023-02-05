@@ -18,8 +18,8 @@ The department, similarly to the others, is composed by a head/coordinator and t
 
 | <div style="width:20vw">Nome</div> | <div style="width:20vw">Cargo</div> |
 | ---------------------------------- | ----------------------------------- |
-| **Márcio Brandão**                 | Head Coordinator                    |
-| **Nuno Domingues**                 | Co-Coordinator                      |
+| **Nuno Domingues**                 | Head Coordinator                    |
+| **Eduardo Couto**                  | Co-Coordinator                      |
 | **Jaime Brito**                    | Member                              |
 | **Miguel Ferreira**                | Member                              |
 | **Ricardo Freitas**                | Member                              |
