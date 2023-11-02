@@ -21,10 +21,15 @@ The department, similarly to the others, is composed by a head/coordinator and t
 | <div style="width:20vw">Profile Picture and Name</div> | <div style="width:20vw">Role</div> |
 | ----------------------------------------------------- | --------------------------------- |
 | <div style="display:flex; align-items:center;"><img src="https://github.com/andrefbarros.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**André Barros**](https://github.com/andrefbarros)</div></div> | Head Coordinator |
+| <div style="display:flex; align-items:center;"><img src="https://github.com/ricardo177m.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**Ricardo Moreira**](https://github.com/ricardo177m) </div></div> | Member |
 | <div style="display:flex; align-items:center;"><img src="https://github.com/esfoliante.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**Miguel Ferreira**](https://github.com/esfoliante)</div></div> | Member |
 | <div style="display:flex; align-items:center;"><img src="https://github.com/rmotafreitas.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**Ricardo Freitas**](https://github.com/rmotafreitas)</div></div> | Member |
-| <div style="display:flex; align-items:center;"><img src="https://github.com/ricardo177m.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**Ricardo Moreira**](https://github.com/ricardo177m) </div></div> | Member |
-
+| <div style="display:flex; align-items:center;"><img src="https://github.com/andrereis26.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**André Reis**](https://github.com/andrereis26) </div></div> | Member |
+| <div style="display:flex; align-items:center;"><img src="https://github.com/shurme.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**Henrique Ferreira**](https://github.com/shurme) </div></div> | Member |
+| <div style="display:flex; align-items:center;"><img src="https://github.com/pintohen.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**Henrique Pinto**](https://github.com/pintohen) </div></div> | Member |
+| <div style="display:flex; align-items:center;"><img src="https://github.com/rpedros02.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**Rui Silva**](https://github.com/rpedros02) </div></div> | Member |
+| <div style="display:flex; align-items:center;"><img src="https://github.com/FlyHighMyBlackEagle.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**Rui Silva**](https://github.com/FlyHighMyBlackEagle) </div></div> | Member |
+| <div style="display:flex; align-items:center;"><img src="https://github.com/samaramirandda.png" alt="Profile Picture" width="60" style="border-radius: 30px;"><div style="text-align:center; margin-left: 10px;">[**Samara Miranda**](https://github.com/samaramirandda) </div></div> | Member |
 
 # 💻 Projects
 
