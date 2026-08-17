@@ -1,0 +1,127 @@
+name: Publish NEI semantic release
+description: Publish a semantic GitHub Release for merged runtime-changing pull requests.
+
+inputs:
+  github-token:
+    description: GitHub token with contents:write and pull-requests:read.
+    required: true
+  product-name:
+    description: Human-readable product name used in the GitHub Release title.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Publish semantic release when required
+      uses: actions/github-script@v9
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const releaseLabels = ["release:major", "release:minor", "release:patch"];
+          const pr = context.payload.pull_request;
+          if (!pr || context.payload.action !== "closed" || pr.merged !== true) {
+            core.info("No merged pull request to release.");
+            return;
+          }
+
+          const selected = (pr.labels || [])
+            .map((label) => label.name)
+            .filter((label) => releaseLabels.includes(label));
+          const isDependabot = pr.user?.login === "dependabot[bot]";
+          const files = await github.paginate(github.rest.pulls.listFiles, {
+            ...context.repo,
+            pull_number: pr.number,
+            per_page: 100,
+          });
+          const isNonRuntimePath = (filename) => {
+            return filename.startsWith(".github/") ||
+              filename.startsWith("docs/") ||
+              filename.endsWith(".md") ||
+              /^LICENSE(?:\..*)?$/.test(filename) ||
+              filename === ".gitignore" ||
+              filename === ".editorconfig" ||
+              filename.startsWith(".vscode/");
+          };
+          const nonRuntimeOnly = files.length > 0 && files.every((file) => isNonRuntimePath(file.filename));
+          if (isDependabot || nonRuntimeOnly) {
+            core.info("Merged PR is exempt from application releases; no tag or GitHub Release will be created.");
+            return;
+          }
+
+          if (selected.length !== 1) {
+            core.setFailed(`Merged runtime-changing PR must have exactly one release label. Found: ${selected.join(", ") || "none"}.`);
+            return;
+          }
+
+          const { owner, repo } = context.repo;
+          const refs = await github.paginate(github.rest.git.listMatchingRefs, {
+            owner,
+            repo,
+            ref: "tags/v",
+            per_page: 100,
+          });
+          const versions = refs
+            .map((ref) => ref.ref.replace("refs/tags/", ""))
+            .map((name) => {
+              const match = /^v(\d+)\.(\d+)\.(\d+)$/.exec(name);
+              return match ? {
+                name,
+                major: Number(match[1]),
+                minor: Number(match[2]),
+                patch: Number(match[3]),
+              } : null;
+            })
+            .filter(Boolean)
+            .sort((a, b) => a.major - b.major || a.minor - b.minor || a.patch - b.patch);
+
+          if (versions.length === 0) {
+            core.setFailed("No semantic-version release tag exists to bump from. Bootstrap the repository first.");
+            return;
+          }
+
+          const latest = versions.at(-1);
+          let { major, minor, patch } = latest;
+          if (selected[0] === "release:major") {
+            major += 1;
+            minor = 0;
+            patch = 0;
+          } else if (selected[0] === "release:minor") {
+            minor += 1;
+            patch = 0;
+          } else {
+            patch += 1;
+          }
+
+          const nextTag = `v${major}.${minor}.${patch}`;
+          const mergeSha = pr.merge_commit_sha;
+          const productName = `${{ inputs.product-name }}`;
+
+          try {
+            await github.rest.repos.getReleaseByTag({ owner, repo, tag: nextTag });
+            core.setFailed(`${nextTag} already exists; refusing to overwrite an existing release.`);
+            return;
+          } catch (error) {
+            if (error.status !== 404) throw error;
+          }
+
+          const generated = await github.rest.repos.generateReleaseNotes({
+            owner,
+            repo,
+            tag_name: nextTag,
+            target_commitish: mergeSha,
+            previous_tag_name: latest.name,
+          });
+
+          await github.rest.repos.createRelease({
+            owner,
+            repo,
+            tag_name: nextTag,
+            target_commitish: mergeSha,
+            name: `${productName} ${nextTag}`,
+            body: `Released automatically from PR #${pr.number}: ${pr.title}.\n\n${generated.data.body}`,
+            draft: false,
+            prerelease: false,
+            make_latest: "true",
+          });
+
+          core.info(`Published ${productName} ${nextTag} from PR #${pr.number}.`);
