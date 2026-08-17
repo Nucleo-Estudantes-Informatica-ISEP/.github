@@ -1,0 +1,53 @@
+name: NEI secret scan
+description: Run a verified Gitleaks scan with a consistent organization-wide version.
+
+inputs:
+  gitleaks-version:
+    description: Gitleaks version to install and verify.
+    required: false
+    default: "8.30.1"
+  full-history:
+    description: Scan all reachable Git history instead of only the PR/push range.
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout full history
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - name: Install verified Gitleaks binary
+      shell: bash
+      env:
+        GITLEAKS_VERSION: ${{ inputs.gitleaks-version }}
+      run: |
+        set -euo pipefail
+        workdir="$RUNNER_TEMP/nei-gitleaks"
+        mkdir -p "$workdir"
+        asset="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+        base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+        curl --fail --silent --show-error --location --output "$workdir/$asset" "$base/$asset"
+        curl --fail --silent --show-error --location --output "$workdir/checksums.txt" "$base/gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+        (cd "$workdir" && grep " $asset$" checksums.txt | sha256sum --check --strict)
+        tar -xzf "$workdir/$asset" -C "$workdir" gitleaks
+        echo "GITLEAKS_BIN=$workdir/gitleaks" >> "$GITHUB_ENV"
+
+    - name: Scan secrets
+      shell: bash
+      env:
+        EVENT_NAME: ${{ github.event_name }}
+        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        HEAD_SHA: ${{ github.sha }}
+        FULL_HISTORY: ${{ inputs.full-history }}
+      run: |
+        set -euo pipefail
+        if [ "$FULL_HISTORY" = "true" ]; then
+          "$GITLEAKS_BIN" git --redact --no-banner .
+        elif [ "$EVENT_NAME" = "pull_request" ]; then
+          "$GITLEAKS_BIN" git --redact --no-banner --log-opts="${BASE_SHA}..${HEAD_SHA}" .
+        else
+          "$GITLEAKS_BIN" git --redact --no-banner --log-opts=-1 .
+        fi
