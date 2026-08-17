@@ -1,20 +1,31 @@
 # Repository ruleset presets
 
-GitHub Free for organizations supports repository-level rulesets only for **public** repositories. These presets therefore become applicable after each project is made public.
+GitHub Free for organizations supports repository-level rulesets for **public** repositories. The active NEI platforms are public, so the presets in this directory can be enforced without GitHub Team.
 
-## Order of operations
+## Automated application
 
-For a repository that is currently private:
+The preferred path is `scripts/apply-repository-governance.sh`, exposed through the **Apply repository governance** workflow in the organization `.github` repository.
 
-1. Merge the repository's governance/security CI PRs.
-2. Change repository visibility to Public.
-3. Enable Dependabot alerts and Dependabot security updates.
-4. Enable Secret Protection / secret scanning and repository push protection.
-5. Enable CodeQL **Default Setup**. Do not add the shared advanced CodeQL workflow unless Default Setup is intentionally disabled.
-6. Confirm a pull request produces the expected checks.
-7. Import the matching JSON preset from **Settings → Rules → Rulesets → New ruleset → Import a ruleset**.
+The script is idempotent and applies the baseline to Antirecurso, Antirecurso API, Orbit, Unclassed and Fallstack:
 
-The presets require:
+1. enable dependency/vulnerability alerts;
+2. enable Dependabot security updates;
+3. enable secret scanning and repository push protection;
+4. configure CodeQL Default Setup;
+5. create missing repository rulesets or update existing rulesets with the JSON presets below.
+
+For the workflow, create a repository Actions secret named `NEI_GOVERNANCE_TOKEN` in the `.github` repository. Use a fine-grained PAT owned by an organization owner with access limited to the five target repositories and **Repository permissions → Administration: Read and write**. Do not commit or paste the token into workflow YAML, issues, PRs, or chat.
+
+Run the workflow once with `dry_run=true`, inspect the plan, then run it with `dry_run=false`. Re-running it later updates the existing rulesets rather than creating duplicates.
+
+The same script can also be run locally:
+
+```bash
+GH_TOKEN='<fine-grained PAT>' DRY_RUN=true bash scripts/apply-repository-governance.sh
+GH_TOKEN='<fine-grained PAT>' DRY_RUN=false bash scripts/apply-repository-governance.sh
+```
+
+## What the presets require
 
 - no branch deletion;
 - no force-push/non-fast-forward updates;
@@ -39,15 +50,15 @@ The presets require:
 
 ### Antirecurso
 
-Antirecurso already has an active repository ruleset named `main`. Do **not** create a duplicate. Edit the existing ruleset so its required checks match `antirecurso-main.json`; in particular add `validate-release-label`, `dependency-review / Dependency review`, and `CodeQL` after the centralization PR is merged.
+Antirecurso already has an active repository ruleset named `main`. The automation updates that ruleset in place so its required checks match `antirecurso-main.json`; it does not create a duplicate.
 
 ### Unclassed
 
-The `main` preset assumes the CI currently accumulated on `dev` is part of the `dev → main` release promotion. If `main` is protected before that CI exists for main-targeting pull requests, verify those checks appear on the release PR before activating the ruleset.
+The `main` preset assumes the CI currently accumulated on `dev` is part of the `dev → main` release promotion. If the application check names change when that work is promoted, update `unclassed-main.json` before re-running the governance workflow.
 
 ### Fallstack
 
-`fallstack-main.json` matches the CI currently on `main` (`Test, Typecheck & Lint` and the migrator-stage Docker check). The stabilization work on `dev` has stronger/differently named checks. When that CI is promoted to `main`, update the main ruleset to use the same application check names as `fallstack-dev.json` plus `validate-release-label`.
+`fallstack-main.json` matches the CI currently on `main`. The stabilization work on `dev` has stronger/differently named checks. When that CI is promoted to `main`, update the main preset to use the same application check names as `fallstack-dev.json` plus `validate-release-label`, then re-run the governance workflow.
 
 ## Integration IDs
 
