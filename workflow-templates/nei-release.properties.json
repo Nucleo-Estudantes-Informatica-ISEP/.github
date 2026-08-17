@@ -1,0 +1,6 @@
+{
+  "name": "NEI semantic releases",
+  "description": "Validate NEI release labels and publish SemVer releases for runtime-changing PRs into main.",
+  "iconName": "octicon-tag",
+  "categories": ["Automation"]
+}
