@@ -1,0 +1,36 @@
+name: Apply repository governance
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Show planned writes without changing repositories
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  apply:
+    name: Apply governance baseline
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.NEI_GOVERNANCE_TOKEN }}
+      DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Require governance token
+        shell: bash
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "Missing repository secret NEI_GOVERNANCE_TOKEN." >&2
+            exit 1
+          fi
+
+      - name: Apply repository governance
+        shell: bash
+        run: bash scripts/apply-repository-governance.sh
