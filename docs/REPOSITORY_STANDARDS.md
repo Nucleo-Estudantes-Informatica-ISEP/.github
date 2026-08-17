@@ -56,14 +56,11 @@ A revoked historical credential is not, by itself, a reason to rewrite Git histo
 
 ## CodeQL and dependency review
 
-The central reusable workflows are:
+For public repositories, prefer **CodeQL Default Setup** in GitHub's repository security settings. Default Setup and an advanced CodeQL Actions configuration are mutually exclusive; enabling both causes the advanced analysis upload to fail.
 
-- `.github/workflows/codeql.yml`
-- `.github/workflows/dependency-review.yml`
+The reusable `.github/workflows/codeql.yml` workflow is retained only for repositories that genuinely require an advanced CodeQL configuration. Before using it, disable Default Setup for that repository and document why advanced configuration is needed.
 
-For current TypeScript/JavaScript projects, call CodeQL with `javascript-typescript` and the `security-extended` query suite. Keep the caller in each repository small so additional languages or repository-specific build requirements can be added without changing unrelated projects.
-
-Dependency review fails when a pull request introduces a dependency with a known **high or critical** vulnerability. It complements, rather than replaces, the repository's package-manager audit and Dependabot configuration.
+The standard local `security.yml` should normally call only `.github/workflows/dependency-review.yml`. Dependency review fails when a pull request introduces a dependency with a known **high or critical** vulnerability. It complements, rather than replaces, package-manager audits and Dependabot.
 
 ## Public repository checklist
 
@@ -77,7 +74,8 @@ Before changing a private project to public:
 6. After publication, import/apply `rulesets/nei-default-branch.json` as a repository-level ruleset and keep repository-specific required status checks in their existing rules/protection configuration.
 7. Enable Dependabot alerts and security updates.
 8. Enable GitHub secret scanning and push protection.
-9. Enable the local CodeQL and dependency-review workflow callers.
+9. Enable CodeQL Default Setup.
+10. Keep the local dependency-review workflow caller enabled.
 
 ## CI boundaries
 
