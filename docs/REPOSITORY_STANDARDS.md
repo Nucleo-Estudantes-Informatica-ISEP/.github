@@ -60,7 +60,7 @@ Before changing a private project to public:
 3. Review `.env` examples, seed data, fixtures, screenshots and documentation for personal or partner information.
 4. Keep an existing license unchanged. If the project has no license and the goal is maximum restriction, leave it without a `LICENSE`; GitHub's default copyright rules then apply.
 5. Add the local CODEOWNERS file.
-6. After publication, apply the repository-level baseline ruleset with `scripts/apply-public-ruleset.sh` and keep repository-specific required status checks in their existing rules/protection configuration.
+6. After publication, import/apply `rulesets/nei-default-branch.json` as a repository-level ruleset and keep repository-specific required status checks in their existing rules/protection configuration.
 7. Enable GitHub secret scanning and push protection for the public repository.
 
 ## CI boundaries
