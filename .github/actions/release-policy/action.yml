@@ -1,0 +1,57 @@
+name: Validate NEI release policy
+description: Enforce semantic-release labels only for pull requests that change runtime code.
+
+inputs:
+  github-token:
+    description: GitHub token used to inspect pull request files.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Validate release label policy
+      uses: actions/github-script@v9
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const releaseLabels = ["release:major", "release:minor", "release:patch"];
+          const pr = context.payload.pull_request;
+          if (!pr) {
+            core.setFailed("The NEI release policy action must run from a pull_request event.");
+            return;
+          }
+
+          const selected = (pr.labels || [])
+            .map((label) => label.name)
+            .filter((label) => releaseLabels.includes(label));
+
+          const isDependabot = pr.user?.login === "dependabot[bot]";
+          const files = await github.paginate(github.rest.pulls.listFiles, {
+            ...context.repo,
+            pull_number: pr.number,
+            per_page: 100,
+          });
+
+          const isNonRuntimePath = (filename) => {
+            return filename.startsWith(".github/") ||
+              filename.startsWith("docs/") ||
+              filename.endsWith(".md") ||
+              /^LICENSE(?:\..*)?$/.test(filename) ||
+              filename === ".gitignore" ||
+              filename === ".editorconfig" ||
+              filename.startsWith(".vscode/");
+          };
+
+          const nonRuntimeOnly = files.length > 0 && files.every((file) => isNonRuntimePath(file.filename));
+          if (isDependabot || nonRuntimeOnly) {
+            const reason = isDependabot ? "Dependabot pull request" : "documentation/CI/metadata-only pull request";
+            core.info(`${reason}: no release label is required and no application release will be published.`);
+            if (selected.length > 0) {
+              core.warning(`Release label ${selected.join(", ")} is unnecessary for this exempt pull request and will be ignored by release publishing.`);
+            }
+            return;
+          }
+
+          if (selected.length !== 1) {
+            core.setFailed(`Runtime-changing PRs into main must have exactly one release label: ${releaseLabels.join(", ")}. Found: ${selected.join(", ") || "none"}.`);
+          }

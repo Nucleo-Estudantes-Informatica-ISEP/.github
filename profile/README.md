@@ -1,68 +1,71 @@
-# 👋 Welcome
+# 👋 NEI-ISEP Informatics
 
-Welcome to the Informatics Department Núcleo de Estudantes de Informática (NEI-ISEP)! We are a dynamic and dedicated team responsible to handle the general infrastructure of the department as well as the organization's email systems and the events' websites.
+Welcome to the Informatics Department of the **Núcleo de Estudantes de Informática do ISEP (NEI-ISEP)**.
 
-[Want to get in touch? See here!](#contact-us)
+We develop and maintain the digital platforms used by students and by the organization, build websites and tooling for NEI events, and support the infrastructure required for the department's day-to-day operation.
 
-# 🎯 Mission
+## 🎯 Mission
 
-As the informatics department of NEI, our mission is clear: we are responsible for providing support for any informatics related issues, all the way from website development, to server, e-mail and drive management. We are committed to allow the day-to-day operations of each department to run smoothly and to share the organization events through our work.
+Our mission is to make NEI's software and infrastructure reliable, secure and maintainable while giving students a place to build real products and learn modern engineering practices.
 
-# 📋 Responsibilities
+We work across web applications, APIs, authentication, databases, CI/CD, containers, observability and organization infrastructure.
 
-The Informatics department of NEI is responsible for developing and maintaining projects for the events organized (FallStack, GameJam) by NEI-ISEP (e.g. websites, discord bots, etc.), as well as maintaining the platforms and services used by NEI (e.g. E-mail accounts, Zoom sessions, etc.).
+## 💻 Platforms
 
-# 💻 Projects
+### 📚 Antirecurso
 
-### 🧾 Policy
+[Antirecurso](https://github.com/Nucleo-Estudantes-Informatica-ISEP/antirecurso) is the student resource platform for sharing and accessing course material, exams, notes, questions, scores and related academic workflows.
 
-We keep the exclusivity of our event repositories content and details to the organization for practical purposes, as some key information about partners can me shared throughout the development and needs to be checked before being made public. Therefore, we keep the repositories of the current event private until the respective event is successfully finished.
+The current backend is the [AdonisJS Antirecurso API](https://github.com/Nucleo-Estudantes-Informatica-ISEP/antirecurso-api-adonis).
 
-This policy safeguards the integrity of our events, prevents premature dissemination of information and unauthorized access that could compromise the entire event.
+### 🔄 Unclassed
 
-## 👨🏻‍💻 FallStack
+[Unclassed](https://github.com/Nucleo-Estudantes-Informatica-ISEP/unclassed) helps ISEP Informatics students manage class and subject swap requests, including automated matching and notification workflows.
 
-FallStack stands as a recurring highlight within our organization, serving as door to the Job World. Many companies come to this event to share possible internships and future job offers to the ISEP students.
+### 🛰️ Orbit
 
-Check out <a href="https://fallstack.nei-isep.org/" target="_blank">here</a> the latest release.
+[Orbit](https://github.com/Nucleo-Estudantes-Informatica-ISEP/orbit) is NEI's internal operations platform for members, departments, projects, tasks, recruitment, inventory, events, plans and other organization workflows.
 
-## 👾 Game Jam
+### ⚡ NEI Website
 
-Game Jam is an event dedicated to all game developers who want to test their knowledge in two intense days in a hackathon style contest. The students can sign up to the event and compete for the best game. Aswell as the final prize for the winners, the fun is always grated.
+The [NEI website](https://github.com/Nucleo-Estudantes-Informatica-ISEP/nei-website) is the public home of the organization, its departments, activities and useful information for students.
 
-Check out <a href="https://gamejam.nei-isep.org/" target="_blank">here</a> the latest release.
+## 🎪 Events
 
-## ⚡ NEI Website
+### 👨🏻‍💻 FallStack
 
-Initially, our website was made on WordPress. A simple and efetive way to show our purpose, members and some quick links. 
+[FallStack](https://github.com/Nucleo-Estudantes-Informatica-ISEP/fallstack-website) connects ISEP students with companies, internships and career opportunities through talks, stands and networking activities.
 
-However, we decided, in 2022, to step up and rebuild it using NEXT.js. The decision to migrate to the relatively new NEXT.js framework reflects our commitment to expanding our knowledge horizons and delivering an even more captivating user experience, opening doors for new things to come! 
+Visit the latest event at [fallstack.nei-isep.org](https://fallstack.nei-isep.org/).
 
-We are currently developing the **new** website but you can still check our website!
+### 👾 Game Jam
 
-Check out <a href="https://nei-isep.org/" target="_blank">here</a> the latest release.
+NEI Game Jam is an intensive game-development event where students build and present games in a hackathon-style format.
 
-# 🚀 Technologies Utilized
+Visit [gamejam.nei-isep.org](https://gamejam.nei-isep.org/) for the latest edition.
 
-## Static Websites with Astro
+### 🌱 CodeSpring
 
-For creating incredibly fast static websites, we turn to Astro. It's a dynamic static site generator that allows us to use modern JavaScript frameworks like React, Vue, and Svelte. Astro takes care of turning these frameworks into static HTML, CSS, and JavaScript during the build process.
+CodeSpring is another recurring NEI technology event. Repositories for an edition may remain private while the event is being prepared and can be published after partner/private information has been reviewed.
 
-## Dynamic Websites with Next.js
+## 🔐 Repository policy
 
-When our websites need to be dynamic and interactive, we rely on NEXT.js. This framework combines server-side rendering, static site generation, and client-side rendering to provide a versatile solution. NEXT.js enables us to build applications that fetch data in real-time and offer features like user authentication and live updates.
+We keep repositories private while they contain unreleased event information, partner details, credentials or other material that must not be public. Maintained software projects should be made public once a security/privacy review is complete when there is no operational reason to keep the source private.
 
-## Examples 
+Existing project licenses are preserved. A public repository with no license remains under default copyright rules unless the project maintainers deliberately choose a license.
 
-Purpose | Technologies | Example Project |
---------| ------------- |------------------
-Static Websites | Astro | [Gamejam Event](https://gamejam.nei-isep.org/)
-Dynamic Websites | NEXT | [NEI Website](in progress)
+## 🛠️ Engineering standards
 
-# 📞 Contact Us <a name="contact-us"></a>
+Shared contribution policy, security guidance, release automation, secret scanning and repository standards live in the organization's [`.github` repository](https://github.com/Nucleo-Estudantes-Informatica-ISEP/.github).
 
-If you're interested in partnering with us or need more information, please don't hesitate to get in touch:
+Runtime-changing pull requests to `main` in participating projects use semantic release labels (`release:patch`, `release:minor`, `release:major`). Dependabot and documentation/CI/metadata-only changes do not create application releases.
+
+Project-specific build, test, migration and deployment checks remain inside each repository so changing a framework or package manager in one application does not break unrelated projects.
+
+## 📞 Contact us
+
+For Informatics Department questions, collaboration or operational support:
 
 **Email:** [informatica@nei-isep.org](mailto:informatica@nei-isep.org)
 
-Feel free to reach out to us for any inquiries, collaborations, or simply to learn more about our work. We're excited to connect with you and explore potential opportunities together!
+For suspected vulnerabilities, do not open a public issue; follow the organization or repository-specific `SECURITY.md` policy.
