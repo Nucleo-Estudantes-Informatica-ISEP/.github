@@ -95,8 +95,7 @@ def api_request(
 def load_preset(relative_path: str) -> dict[str, Any]:
     path = ROOT / relative_path
     with path.open("r", encoding="utf-8") as handle:
-        data = json.load(handle)
-    return data
+        return json.load(handle)
 
 
 def comparable_live_ruleset(live: dict[str, Any], desired: dict[str, Any]) -> dict[str, Any]:
@@ -110,11 +109,11 @@ def comparable_live_ruleset(live: dict[str, Any], desired: dict[str, Any]) -> di
 
 
 def audit_rulesets(token: str, org: str, repo: str, apply: bool) -> int:
-    failures = 0
+    drift = 0
     preset_paths = PRESETS.get(repo, ())
     if not preset_paths:
         print(f"  rulesets: no canonical presets for {repo}; skipped")
-        return failures
+        return drift
 
     _, summaries = api_request(
         token,
@@ -136,7 +135,7 @@ def audit_rulesets(token: str, org: str, repo: str, apply: bool) -> int:
 
         if existing is None:
             print(f"  ruleset {name}: MISSING ({relative_path})")
-            failures += 1
+            drift += 1
             if apply:
                 _, created = api_request(
                     token,
@@ -160,7 +159,7 @@ def audit_rulesets(token: str, org: str, repo: str, apply: bool) -> int:
             print(f"  ruleset {name}: OK (id={ruleset_id})")
             continue
 
-        failures += 1
+        drift += 1
         print(f"  ruleset {name}: DRIFT (id={ruleset_id}, preset={relative_path})")
         for key in desired:
             if current.get(key) != desired.get(key):
@@ -175,7 +174,7 @@ def audit_rulesets(token: str, org: str, repo: str, apply: bool) -> int:
             )
             print("    -> updated from canonical preset")
 
-    return failures
+    return drift
 
 
 def find_local_codeql_workflows(token: str, org: str, repo: str) -> list[str]:
@@ -199,16 +198,11 @@ def find_local_codeql_workflows(token: str, org: str, repo: str) -> list[str]:
 
 
 def audit_codeql(token: str, org: str, repo: str, apply: bool) -> int:
-    try:
-        _, config = api_request(
-            token,
-            "GET",
-            f"/repos/{org}/{repo}/code-scanning/default-setup",
-        )
-    except ApiError as exc:
-        print(f"  CodeQL Default Setup: ERROR ({exc.status})")
-        print(f"    {exc.body}")
-        return 1
+    _, config = api_request(
+        token,
+        "GET",
+        f"/repos/{org}/{repo}/code-scanning/default-setup",
+    )
 
     state = config.get("state")
     if state == "configured":
@@ -226,17 +220,12 @@ def audit_codeql(token: str, org: str, repo: str, apply: bool) -> int:
     if not apply:
         return 1
 
-    try:
-        status, response = api_request(
-            token,
-            "PATCH",
-            f"/repos/{org}/{repo}/code-scanning/default-setup",
-            payload={"state": "configured"},
-        )
-    except ApiError as exc:
-        print(f"    -> enable failed ({exc.status}): {exc.body}")
-        return 1
-
+    status, response = api_request(
+        token,
+        "PATCH",
+        f"/repos/{org}/{repo}/code-scanning/default-setup",
+        payload={"state": "configured"},
+    )
     run_id = response.get("run_id") if isinstance(response, dict) else None
     extra = f", validation run={run_id}" if run_id else ""
     print(f"    -> enable requested (HTTP {status}{extra})")
@@ -270,6 +259,7 @@ def main() -> int:
 
     repos = args.repo or sorted(PRESETS)
     drift = 0
+    api_errors = 0
 
     print("mode:", "APPLY" if args.apply else "AUDIT (read-only)")
     print("organization:", args.org)
@@ -282,15 +272,21 @@ def main() -> int:
             if not args.rulesets_only:
                 drift += audit_codeql(token, args.org, repo, args.apply)
         except ApiError as exc:
-            drift += 1
+            api_errors += 1
             print(f"  ERROR: {exc}")
 
     if args.apply:
-        print(f"\ncompleted; detected {drift} item(s) that needed attention")
-        return 0
+        print(
+            f"\ncompleted; detected {drift} drift item(s), "
+            f"API errors={api_errors}"
+        )
+        return 1 if api_errors else 0
 
-    if drift:
-        print(f"\naudit found {drift} item(s) needing attention")
+    if drift or api_errors:
+        print(
+            f"\naudit found {drift} drift item(s), "
+            f"API errors={api_errors}"
+        )
         return 1
 
     print("\naudit clean")
