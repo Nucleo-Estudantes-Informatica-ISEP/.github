@@ -1,0 +1,35 @@
+name: Reusable Release
+
+on:
+  workflow_call:
+    inputs:
+      product-name:
+        description: Human-readable product name used in GitHub Release titles.
+        required: true
+        type: string
+
+jobs:
+  validate-release-label:
+    name: Release policy
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: Nucleo-Estudantes-Informatica-ISEP/.github/.github/actions/release-policy@master
+        with:
+          github-token: ${{ github.token }}
+
+  publish-release:
+    name: Publish release
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: Nucleo-Estudantes-Informatica-ISEP/.github/.github/actions/release-publish@master
+        with:
+          github-token: ${{ github.token }}
+          product-name: ${{ inputs.product-name }}
