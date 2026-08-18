@@ -3,7 +3,7 @@ name: Reusable Release
 on:
   workflow_call:
     inputs:
-      product-name:
+      product_name:
         description: Human-readable product name used in GitHub Release titles.
         required: true
         type: string
@@ -32,4 +32,4 @@ jobs:
       - uses: Nucleo-Estudantes-Informatica-ISEP/.github/.github/actions/release-publish@master
         with:
           github-token: ${{ github.token }}
-          product-name: ${{ inputs.product-name }}
+          product-name: ${{ inputs.product_name }}
