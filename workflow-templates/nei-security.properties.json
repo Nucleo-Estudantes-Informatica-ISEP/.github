@@ -1,0 +1,6 @@
+{
+  "name": "NEI security checks",
+  "description": "Run the organization-standard dependency review and verified secret scan.",
+  "iconName": "octicon-shield-lock",
+  "categories": ["Security"]
+}
