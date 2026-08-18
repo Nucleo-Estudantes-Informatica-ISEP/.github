@@ -17,8 +17,8 @@
         "strict_required_status_checks_policy": true,
         "do_not_enforce_on_create": true,
         "required_status_checks": [
-          { "context": "Test, Typecheck & Lint", "integration_id": 15368 },
-          { "context": "Docker migrator stage runs as non-root", "integration_id": 15368 },
+          { "context": "Test, typecheck, lint & build", "integration_id": 15368 },
+          { "context": "Production Docker image", "integration_id": 15368 },
           { "context": "Secret scan", "integration_id": 15368 },
           { "context": "validate-release-label", "integration_id": 15368 },
           { "context": "dependency-review / Dependency review", "integration_id": 15368 },
