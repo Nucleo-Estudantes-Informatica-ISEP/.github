@@ -1,0 +1,45 @@
+name: Reusable Security
+
+on:
+  workflow_call:
+    inputs:
+      dependency-review:
+        description: Run dependency review for eligible pull requests.
+        required: false
+        type: boolean
+        default: true
+      secret-scan:
+        description: Run the organization-standard Gitleaks scan.
+        required: false
+        type: boolean
+        default: true
+      gitleaks-version:
+        description: Gitleaks version used by the shared secret scan action.
+        required: false
+        type: string
+        default: "8.30.1"
+      full-history:
+        description: Scan all reachable Git history instead of the PR/latest commit range.
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  dependency-review:
+    name: Dependency review
+    if: inputs.dependency-review && github.event_name == 'pull_request' && github.event.repository.private == false
+    uses: Nucleo-Estudantes-Informatica-ISEP/.github/.github/workflows/dependency-review.yml@master
+    permissions:
+      contents: read
+
+  secret-scan:
+    name: Secret scan
+    if: inputs.secret-scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: Nucleo-Estudantes-Informatica-ISEP/.github/.github/actions/secret-scan@master
+        with:
+          gitleaks-version: ${{ inputs.gitleaks-version }}
+          full-history: ${{ inputs.full-history }}
