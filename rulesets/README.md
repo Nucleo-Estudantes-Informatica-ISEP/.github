@@ -6,13 +6,14 @@ GitHub Free for organizations supports repository-level rulesets only for **publ
 
 For a repository that is currently private:
 
-1. Merge the repository's governance/security CI PRs.
-2. Change repository visibility to Public.
-3. Enable Dependabot alerts and Dependabot security updates.
-4. Enable Secret Protection / secret scanning and repository push protection.
-5. Enable CodeQL **Default Setup**. Do not add the shared advanced CodeQL workflow unless Default Setup is intentionally disabled.
-6. Confirm a pull request produces the expected checks.
-7. Import the matching JSON preset from **Settings → Rules → Rulesets → New ruleset → Import a ruleset**.
+1. Merge the central reusable-workflow policy in this `.github` repository.
+2. Migrate that application repository to the canonical local callers/CI triggers.
+3. Change repository visibility to Public when appropriate.
+4. Enable Dependabot alerts and Dependabot security updates.
+5. Enable Secret Protection / secret scanning and repository push protection.
+6. Enable CodeQL **Default Setup**. Do not add the shared advanced CodeQL workflow unless Default Setup is intentionally disabled.
+7. Confirm a pull request produces the expected application CI, reusable Security and reusable Release-policy checks.
+8. Update/import the matching repository ruleset so its required status-check contexts exactly match those observed checks.
 
 The presets require:
 
@@ -23,7 +24,7 @@ The presets require:
 - CODEOWNERS approval;
 - approval of the most recent push by someone other than the pusher;
 - all review threads resolved;
-- application CI, secret scanning, release-policy checks (on `main`), dependency review and CodeQL.
+- application CI, Security checks, release-policy checks on `main`, and CodeQL where enabled.
 
 ## Presets
 
@@ -37,17 +38,21 @@ The presets require:
 | Fallstack `main` | `fallstack-main.json` |
 | Fallstack `dev` | `fallstack-dev.json` |
 
-### Antirecurso
+## Workflow-centralization migration
 
-Antirecurso already has an active repository ruleset named `main`. Do **not** create a duplicate. Edit the existing ruleset so its required checks match `antirecurso-main.json`; in particular add `validate-release-label`, `dependency-review / Dependency review`, and `CodeQL` after the centralization PR is merged.
+The JSON files are repository-specific snapshots, not organization-wide live configuration. Reusable-workflow migration can change the exact status-check context exposed by GitHub (for example, a caller job may prefix a called-workflow job name).
 
-### Unclassed
+Therefore, migrate **one repository at a time**:
 
-The `main` preset assumes the CI currently accumulated on `dev` is part of the `dev → main` release promotion. If `main` is protected before that CI exists for main-targeting pull requests, verify those checks appear on the release PR before activating the ruleset.
+1. update that repository's workflows;
+2. let a real pull request run;
+3. record the exact check contexts GitHub reports;
+4. update that repository's ruleset/preset to those contexts;
+5. only then remove obsolete required check names.
 
-### Fallstack
+Do not pre-emptively weaken or delete required checks just because their workflows are being centralized.
 
-`fallstack-main.json` matches the CI currently on `main` (`Test, Typecheck & Lint` and the migrator-stage Docker check). The stabilization work on `dev` has stronger/differently named checks. When that CI is promoted to `main`, update the main ruleset to use the same application check names as `fallstack-dev.json` plus `validate-release-label`.
+Antirecurso already has an active repository ruleset named `main`; edit it rather than creating a duplicate. The same principle applies to any repository that already has an active ruleset.
 
 ## Integration IDs
 
