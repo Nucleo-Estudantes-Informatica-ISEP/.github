@@ -116,7 +116,7 @@ jobs:
       pull-requests: read
     uses: Nucleo-Estudantes-Informatica-ISEP/.github/.github/workflows/release.yml@master
     with:
-      product-name: ${{ github.event.repository.name }}
+      product_name: ${{ github.event.repository.name }}
 ```
 
 For pull requests into `main`:
