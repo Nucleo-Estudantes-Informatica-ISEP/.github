@@ -7,6 +7,14 @@ on:
         description: Human-readable product name used in GitHub Release titles.
         required: true
         type: string
+      edition_label:
+        description: >-
+          Optional edition label inserted into the release title as
+          "<product_name> <edition_label> — <tag>" (e.g. "2026 Edition").
+          Leave unset for a plain "<product_name> <tag>" title.
+        required: false
+        type: string
+        default: ""
 
 jobs:
   validate-release-label:
@@ -33,3 +41,4 @@ jobs:
         with:
           github-token: ${{ github.token }}
           product-name: ${{ inputs.product_name }}
+          edition-label: ${{ inputs.edition_label }}

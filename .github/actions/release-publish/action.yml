@@ -8,6 +8,15 @@ inputs:
   product-name:
     description: Human-readable product name used in the GitHub Release title.
     required: true
+  edition-label:
+    description: >-
+      Optional edition label inserted into the release title as
+      "<product-name> <edition-label> — <tag>" (e.g. "2026 Edition"). Leave
+      unset (default) for a plain "<product-name> <tag>" title. Intended for
+      repos that ship one edition per year/season and want that reflected in
+      the release name without changing the underlying semver scheme.
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -95,6 +104,10 @@ runs:
           const nextTag = `v${major}.${minor}.${patch}`;
           const mergeSha = pr.merge_commit_sha;
           const productName = `${{ inputs.product-name }}`;
+          const editionLabel = `${{ inputs.edition-label }}`.trim();
+          const releaseTitle = editionLabel
+            ? `${productName} ${editionLabel} — ${nextTag}`
+            : `${productName} ${nextTag}`;
 
           try {
             await github.rest.repos.getReleaseByTag({ owner, repo, tag: nextTag });
@@ -117,11 +130,11 @@ runs:
             repo,
             tag_name: nextTag,
             target_commitish: mergeSha,
-            name: `${productName} ${nextTag}`,
+            name: releaseTitle,
             body: `Released automatically from PR #${pr.number}: ${pr.title}.\n\n${generated.data.body}`,
             draft: false,
             prerelease: false,
             make_latest: "true",
           });
 
-          core.info(`Published ${productName} ${nextTag} from PR #${pr.number}.`);
+          core.info(`Published ${releaseTitle} from PR #${pr.number}.`);
