@@ -1,0 +1,6 @@
+
+
+# Local environment files (NEI)
+.env*
+!.env.example
+!**/.env.example

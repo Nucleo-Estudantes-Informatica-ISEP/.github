@@ -160,6 +160,17 @@ A revoked historical credential is not, by itself, a reason to rewrite Git histo
 
 When migrating an existing repository to the reusable Security/Release callers, verify the status-check contexts produced by the new caller and update that repository's ruleset/branch protection in the same repository migration. Never weaken required checks merely to make a renamed context pass.
 
+### Secret storage and response
+
+- Store runtime credentials in the deployment platform or provider secret manager. Use GitHub Actions secrets only for workflow consumers.
+- Ignore `.env*`; commit only reviewed `.env.example` files containing empty values, local-only defaults or unmistakable placeholders.
+- Issue one least-privilege credential per service and environment so one rotation does not disrupt unrelated consumers.
+- Keep scanner output redacted. Never upload raw findings, credentials or connection strings as workflow artifacts.
+- Allowlist only verified false positives, constrained to detector, exact path and non-secret pattern (or individual finding fingerprint). Record the reason; never exempt whole repositories or credentials directories.
+- Expose a boolean `full_history` input in manual Security callers and forward it to the reusable workflow. Full-history audits fetch every branch/tag and scan `--all`.
+- For an exposure: preserve redacted evidence, identify every consumer, create a replacement, deploy and verify it, revoke the old credential, review provider logs, then resolve the alert.
+- Rewrite Git history only when revoked credentials leave still-sensitive or non-rotatable data behind; coordinate every affected branch, tag, fork and clone first.
+
 ## CodeQL
 
 For public repositories, prefer **CodeQL Default Setup** in GitHub's repository security settings. Default Setup and an advanced CodeQL Actions configuration are mutually exclusive; enabling both causes the advanced analysis upload to fail.

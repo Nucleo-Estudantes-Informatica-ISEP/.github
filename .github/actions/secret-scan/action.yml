@@ -45,7 +45,8 @@ runs:
       run: |
         set -euo pipefail
         if [ "$FULL_HISTORY" = "true" ]; then
-          "$GITLEAKS_BIN" git --redact --no-banner .
+          git fetch --force origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*'
+          "$GITLEAKS_BIN" git --redact --no-banner --log-opts="--all" .
         elif [ "$EVENT_NAME" = "pull_request" ]; then
           "$GITLEAKS_BIN" git --redact --no-banner --log-opts="${BASE_SHA}..${HEAD_SHA}" .
         else
