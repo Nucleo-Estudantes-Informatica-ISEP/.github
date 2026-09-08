@@ -13,7 +13,7 @@ For a repository that is currently private:
 5. Enable Secret Protection / secret scanning and repository push protection.
 6. Enable CodeQL **Default Setup**. Do not add the shared advanced CodeQL workflow unless Default Setup is intentionally disabled.
 7. Confirm a pull request produces the expected application CI, reusable Security and reusable Release-policy checks.
-8. Update/import the matching repository ruleset so its required status-check contexts exactly match those observed checks.
+8. Update/import the matching repository ruleset so its required status-check contexts exactly match those observed checks and CodeQL is enforced through the native `code_scanning` rule.
 
 The presets require:
 
@@ -24,7 +24,8 @@ The presets require:
 - CODEOWNERS approval;
 - approval of the most recent push by someone other than the pusher;
 - all review threads resolved;
-- application CI, Security checks, release-policy checks on `main`, and CodeQL where enabled.
+- application CI, Security checks and release-policy checks on `main`;
+- native CodeQL code-scanning merge protection, blocking `Error` alerts and security alerts rated `High` or higher.
 
 ## Presets
 
@@ -37,6 +38,8 @@ The presets require:
 | Unclassed `dev` | `unclassed-dev.json` |
 | Fallstack `main` | `fallstack-main.json` |
 | Fallstack `dev` | `fallstack-dev.json` |
+| Template SEI Website `main` | `template-sei-main.json` |
+| Template SEI Website `dev` | `template-sei-dev.json` |
 
 ## Workflow-centralization migration
 
@@ -54,6 +57,6 @@ Do not pre-emptively weaken or delete required checks just because their workflo
 
 Antirecurso already has an active repository ruleset named `main`; edit it rather than creating a duplicate. The same principle applies to any repository that already has an active ruleset.
 
-## Integration IDs
+## Integration IDs and CodeQL
 
-The JSON files pin GitHub Actions checks to integration ID `15368` and GitHub CodeQL's `CodeQL` check to integration ID `57789`, matching the checks currently produced by GitHub.com. If GitHub changes these integrations or a repository intentionally switches scanning provider, export/update the ruleset instead of weakening required checks.
+The JSON files pin GitHub Actions status checks to integration ID `15368`, matching the checks currently produced by GitHub.com. CodeQL is intentionally **not** represented as a required status-check context: it is enforced by the ruleset-native `code_scanning` rule with tool `CodeQL`. If a repository intentionally switches scanning provider or alert thresholds, export/update the ruleset instead of weakening required checks.
