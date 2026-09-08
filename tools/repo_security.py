@@ -39,6 +39,10 @@ PRESETS: dict[str, tuple[str, ...]] = {
     "orbit": ("rulesets/orbit-main.json",),
     "antirecurso": ("rulesets/antirecurso-main.json",),
     "antirecurso-api-adonis": ("rulesets/antirecurso-api-adonis-main.json",),
+    "template-sei-website": (
+        "rulesets/template-sei-main.json",
+        "rulesets/template-sei-dev.json",
+    ),
     "unclassed": (
         "rulesets/unclassed-main.json",
         "rulesets/unclassed-dev.json",
