@@ -172,7 +172,7 @@ def audit_rulesets(token: str, org: str, repo: str, apply: bool) -> int:
         if apply:
             api_request(
                 token,
-                "PATCH",
+                "PUT",
                 f"/repos/{org}/{repo}/rulesets/{ruleset_id}",
                 payload=desired,
             )
@@ -238,7 +238,7 @@ def audit_codeql(token: str, org: str, repo: str, apply: bool) -> int:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Audit/apply NEI rulesets and CodeQL Default Setup."
+        description="Audit/apply NEI repository rulesets and CodeQL Default Setup."
     )
     parser.add_argument("--apply", action="store_true", help="Apply detected drift")
     parser.add_argument("--org", default=DEFAULT_ORG, help="GitHub organization")
