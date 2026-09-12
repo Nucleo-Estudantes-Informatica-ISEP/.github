@@ -1,11 +1,11 @@
 {
-  "name": "main",
+  "name": "dev",
   "target": "branch",
   "enforcement": "active",
   "conditions": {
     "ref_name": {
       "include": [
-        "refs/heads/main"
+        "refs/heads/dev"
       ],
       "exclude": []
     }
@@ -23,7 +23,6 @@
           { "context": "Frontend lint, typecheck & build", "integration_id": 15368 },
           { "context": "Production Docker images", "integration_id": 15368 },
           { "context": "Security / Secret scan", "integration_id": 15368 },
-          { "context": "validate-release-label", "integration_id": 15368 },
           { "context": "Security / Dependency review / Dependency review", "integration_id": 15368 }
         ]
       }

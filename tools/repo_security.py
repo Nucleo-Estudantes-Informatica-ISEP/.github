@@ -16,6 +16,7 @@ Administration write access when --apply is used.
 from __future__ import annotations
 
 import argparse
+from copy import deepcopy
 import json
 import os
 import sys
@@ -36,9 +37,18 @@ PRESETS: dict[str, tuple[str, ...]] = {
         "rulesets/fallstack-main.json",
         "rulesets/fallstack-dev.json",
     ),
-    "orbit": ("rulesets/orbit-main.json",),
-    "antirecurso": ("rulesets/antirecurso-main.json",),
-    "antirecurso-api-adonis": ("rulesets/antirecurso-api-adonis-main.json",),
+    "orbit": (
+        "rulesets/orbit-main.json",
+        "rulesets/orbit-dev.json",
+    ),
+    "antirecurso": (
+        "rulesets/antirecurso-main.json",
+        "rulesets/antirecurso-dev.json",
+    ),
+    "antirecurso-api-adonis": (
+        "rulesets/antirecurso-api-adonis-main.json",
+        "rulesets/antirecurso-api-adonis-dev.json",
+    ),
     "template-sei-website": (
         "rulesets/template-sei-main.json",
         "rulesets/template-sei-dev.json",
@@ -102,14 +112,66 @@ def load_preset(relative_path: str) -> dict[str, Any]:
         return json.load(handle)
 
 
+def project_canonical(live: Any, desired: Any) -> Any:
+    """Project API output onto the fields represented by the canonical preset."""
+
+    if isinstance(desired, dict):
+        live_dict = live if isinstance(live, dict) else {}
+        return {
+            key: project_canonical(live_dict.get(key), value)
+            for key, value in desired.items()
+        }
+
+    if isinstance(desired, list):
+        if not isinstance(live, list) or len(live) != len(desired):
+            return live
+        return [
+            project_canonical(live_item, desired_item)
+            for live_item, desired_item in zip(live, desired)
+        ]
+
+    return live
+
+
 def comparable_live_ruleset(live: dict[str, Any], desired: dict[str, Any]) -> dict[str, Any]:
     """Compare only canonical fields present in the preset.
 
-    This intentionally preserves live-only fields such as bypass_actors when a
-    preset does not define them.
+    GitHub may return additional top-level and nested fields that are not
+    intentionally managed by these presets.
     """
 
-    return {key: live.get(key) for key in desired}
+    projected = project_canonical(live, desired)
+    return projected if isinstance(projected, dict) else {}
+
+
+def build_update_payload(live: dict[str, Any], desired: dict[str, Any]) -> dict[str, Any]:
+    """Build a PUT payload while preserving live-only protection settings."""
+
+    payload = deepcopy(desired)
+
+    if "bypass_actors" not in payload and "bypass_actors" in live:
+        payload["bypass_actors"] = live["bypass_actors"]
+
+    live_rules = {
+        rule.get("type"): rule
+        for rule in live.get("rules", [])
+        if isinstance(rule, dict) and rule.get("type")
+    }
+
+    for rule in payload.get("rules", []):
+        if not isinstance(rule, dict):
+            continue
+        rule_type = rule.get("type")
+        live_rule = live_rules.get(rule_type)
+        if not isinstance(live_rule, dict):
+            continue
+
+        desired_parameters = rule.get("parameters")
+        live_parameters = live_rule.get("parameters")
+        if isinstance(desired_parameters, dict) and isinstance(live_parameters, dict):
+            rule["parameters"] = {**live_parameters, **desired_parameters}
+
+    return payload
 
 
 def audit_rulesets(token: str, org: str, repo: str, apply: bool) -> int:
@@ -170,11 +232,12 @@ def audit_rulesets(token: str, org: str, repo: str, apply: bool) -> int:
                 print(f"    - {key} differs")
 
         if apply:
+            payload = build_update_payload(live, desired)
             api_request(
                 token,
                 "PUT",
                 f"/repos/{org}/{repo}/rulesets/{ruleset_id}",
-                payload=desired,
+                payload=payload,
             )
             print("    -> updated from canonical preset")
 

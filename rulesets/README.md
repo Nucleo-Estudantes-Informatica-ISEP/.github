@@ -32,8 +32,11 @@ The presets require:
 | Repository / branch | Preset |
 | --- | --- |
 | Antirecurso `main` | `antirecurso-main.json` |
+| Antirecurso `dev` | `antirecurso-dev.json` |
 | Antirecurso API `main` | `antirecurso-api-adonis-main.json` |
+| Antirecurso API `dev` | `antirecurso-api-adonis-dev.json` |
 | Orbit `main` | `orbit-main.json` |
+| Orbit `dev` | `orbit-dev.json` |
 | Unclassed `main` | `unclassed-main.json` |
 | Unclassed `dev` | `unclassed-dev.json` |
 | Fallstack `main` | `fallstack-main.json` |
@@ -54,6 +57,8 @@ Therefore, migrate **one repository at a time**:
 5. only then remove obsolete required check names.
 
 Do not pre-emptively weaken or delete required checks just because their workflows are being centralized.
+
+`tools/repo_security.py` compares only the fields represented by the canonical presets and preserves live-only bypass actors and extra pull-request parameters when updating an existing ruleset.
 
 Antirecurso already has an active repository ruleset named `main`; edit it rather than creating a duplicate. The same principle applies to any repository that already has an active ruleset.
 
