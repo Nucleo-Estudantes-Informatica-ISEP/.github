@@ -1,11 +1,11 @@
 {
-  "name": "main",
+  "name": "dev",
   "target": "branch",
   "enforcement": "active",
   "conditions": {
     "ref_name": {
       "include": [
-        "refs/heads/main"
+        "refs/heads/dev"
       ],
       "exclude": []
     }
@@ -19,12 +19,10 @@
         "strict_required_status_checks_policy": true,
         "do_not_enforce_on_create": true,
         "required_status_checks": [
-          { "context": "API lint, typecheck, test, migrate & build", "integration_id": 15368 },
-          { "context": "Frontend lint, typecheck & build", "integration_id": 15368 },
-          { "context": "Production Docker images", "integration_id": 15368 },
-          { "context": "Security / Secret scan", "integration_id": 15368 },
-          { "context": "validate-release-label", "integration_id": 15368 },
-          { "context": "Security / Dependency review / Dependency review", "integration_id": 15368 }
+          { "context": "Lint, typecheck, test, migrate & build", "integration_id": 15368 },
+          { "context": "Production Docker image", "integration_id": 15368 },
+          { "context": "Secret scan", "integration_id": 15368 },
+          { "context": "dependency-review / Dependency review", "integration_id": 15368 }
         ]
       }
     },
