@@ -112,6 +112,30 @@ def load_preset(relative_path: str) -> dict[str, Any]:
         return json.load(handle)
 
 
+def list_identity_key(live: list[Any], desired: list[Any]) -> str | None:
+    """Return a stable identity key for order-insensitive API lists."""
+
+    for key in ("type", "context", "tool"):
+        if not desired:
+            continue
+        if not all(isinstance(item, dict) and key in item for item in desired):
+            continue
+        if not all(isinstance(item, dict) and key in item for item in live):
+            continue
+
+        desired_values = [item[key] for item in desired]
+        live_values = [item[key] for item in live]
+
+        if len(set(desired_values)) != len(desired_values):
+            continue
+        if len(set(live_values)) != len(live_values):
+            continue
+        if set(desired_values) == set(live_values):
+            return key
+
+    return None
+
+
 def project_canonical(live: Any, desired: Any) -> Any:
     """Project API output onto the fields represented by the canonical preset."""
 
@@ -125,6 +149,15 @@ def project_canonical(live: Any, desired: Any) -> Any:
     if isinstance(desired, list):
         if not isinstance(live, list) or len(live) != len(desired):
             return live
+
+        identity_key = list_identity_key(live, desired)
+        if identity_key:
+            live_by_identity = {item[identity_key]: item for item in live}
+            return [
+                project_canonical(live_by_identity[item[identity_key]], item)
+                for item in desired
+            ]
+
         return [
             project_canonical(live_item, desired_item)
             for live_item, desired_item in zip(live, desired)
