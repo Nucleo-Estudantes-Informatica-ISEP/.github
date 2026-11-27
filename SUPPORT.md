@@ -8,7 +8,7 @@ Use the repository's GitHub Issues when the repository has issues enabled. Pleas
 
 ## Operational or organization support
 
-For questions that are not appropriate for a public issue, contact the Informatics Department at [informatica@nei-isep.org](mailto:informatica@nei-isep.org).
+For questions that are not appropriate for a public issue, contact the NEI-ISEP support team at [support@nei-isep.org](mailto:support@nei-isep.org).
 
 ## Security
 

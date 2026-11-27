@@ -8,7 +8,7 @@ Only the latest released version of each actively maintained project is supporte
 
 Please do not report suspected vulnerabilities in a public issue.
 
-Report security vulnerabilities privately to [informatica@nei-isep.org](mailto:informatica@nei-isep.org), including the affected repository/service, impact, reproduction steps and any relevant logs with secrets redacted.
+Report security vulnerabilities privately to [support@nei-isep.org](mailto:support@nei-isep.org), including the affected repository/service, impact, reproduction steps and any relevant logs with secrets redacted.
 
 We aim to acknowledge reports within 48 hours. If the issue is confirmed, the maintainers will coordinate remediation and disclosure according to severity and complexity.
 
